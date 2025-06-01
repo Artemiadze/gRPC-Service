@@ -1,4 +1,4 @@
-module github.com/Artemiadze/grpc
+module github.com/Artemiadze/gRPC-Service
 
 go 1.23
 
