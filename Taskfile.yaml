@@ -1,4 +1,5 @@
 # See: https://taskfile.dev/api/
+# For example: task generate - it is generated code for proto
 
 version: "3"
 
