@@ -1,5 +1,6 @@
 env: "local" # dev, prod
 storage_path: "./storage/sso.db"   # место хранения базы данных
+token_ttl: 1h # время жизни токена в секунда
 grpc:
   port: 50051 # порт gRPC сервера
-  timeout: 5 # таймаут gRPC запросов в секундах
+  timeout: 5s # таймаут gRPC запросов в секундах
