@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Artemiadze/gRPC-Service/internal/app"
 	"github.com/Artemiadze/gRPC-Service/internal/config"
 	"go.uber.org/zap"
 )
@@ -28,7 +29,9 @@ func main() {
 	//logger.Debug("Debug message")
 
 	// инициализация приложения (app)
+	application := app.New(logger, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
 
+	application.GRPCServer.MustRun() // запускаем gRPC-сервер приложения
 	// запустить gRPC-сервер приложения
 }
 
