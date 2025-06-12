@@ -1,6 +1,10 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/Artemiadze/gRPC-Service/internal/app"
 	"github.com/Artemiadze/gRPC-Service/internal/config"
 	"go.uber.org/zap"
@@ -31,8 +35,23 @@ func main() {
 	// инициализация приложения (app)
 	application := app.New(logger, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
 
-	application.GRPCServer.MustRun() // запускаем gRPC-сервер приложения
-	// запустить gRPC-сервер приложения
+	// Go-routine для запуска gRPC сервера
+	go application.GRPCServer.MustRun()
+
+	// ожидание сигнала остановки
+	// для graceful shutdown
+	// (например, при нажатии Ctrl+C)
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	signal := <-stop
+	logger.Info("stopping application",
+		zap.String("signal", signal.String()),
+		zap.String("env", cfg.Env))
+
+	application.GRPCServer.Stop()
+	logger.Info("application stopped")
+
 }
 
 func setupLogger(env string) *zap.Logger {
