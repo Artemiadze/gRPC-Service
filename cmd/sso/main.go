@@ -41,10 +41,10 @@ func main() {
 	// ожидание сигнала остановки
 	// для graceful shutdown
 	// (например, при нажатии Ctrl+C)
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+	gracefulShutdown := make(chan os.Signal, 1)
+	signal.Notify(gracefulShutdown, syscall.SIGTERM, syscall.SIGINT)
 
-	signal := <-stop
+	signal := <-gracefulShutdown
 	logger.Info("stopping application",
 		zap.String("signal", signal.String()),
 		zap.String("env", cfg.Env))
