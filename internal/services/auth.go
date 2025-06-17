@@ -7,6 +7,7 @@ import (
 	"time"
 
 	err_internal "github.com/Artemiadze/gRPC-Service/internal/errors"
+	"github.com/Artemiadze/gRPC-Service/internal/lib/jwt"
 	"github.com/Artemiadze/gRPC-Service/internal/models"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -71,6 +72,12 @@ func (a *AuthService) Login(ctx context.Context, email string, password string, 
 
 	log.Info("user logged in successfully")
 
+	token, err := jwt.GenerateToken(user, app, a.tokenTTL)
+	if err != nil {
+		return "", fmt.Errorf("failed to get app: %s %w", op, err)
+	}
+
+	return token, nil
 }
 
 func (a *AuthService) RegisterNewUser(ctx context.Context, email string, password string, appID int) (int64, error) {
