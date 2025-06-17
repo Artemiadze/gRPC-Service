@@ -102,6 +102,17 @@ func (a *AuthService) RegisterNewUser(ctx context.Context, email string, passwor
 	return id, nil
 }
 
-func (a *AuthService) IsAdmin(ctx context.Context, email string, password string, appID int) (string, error) {
-	panic("not implemented yet") // TODO: Implement GetUser method
+func (a *AuthService) IsAdmin(ctx context.Context, userID int64) (bool, error) {
+	const op = "AuthService.IsAdmin"
+	log := a.log.With(zap.String("method", op), zap.Int64("ID", userID))
+
+	log.Info("checking if user is admin")
+
+	isAdmin, err := a.usrProvider.IsAdmin(ctx, userID)
+	if err != nil {
+		return false, fmt.Errorf("failed to check admin status: %s %w", op, err)
+	}
+
+	log.Info("checked admin status successfully", zap.Bool("isAdmin", isAdmin))
+	return isAdmin, nil
 }
