@@ -56,7 +56,7 @@ func (a *AuthService) Login(ctx context.Context, email string, password string, 
 	if err != nil {
 		if errors.Is(err, err_internal.ErrUserNotFound) {
 			a.log.Error("user not found", zap.Error(err))
-			return "", fmt.Errorf("user not found: %w", err)
+			return "", fmt.Errorf("user not found: %w", err_internal.ErrInvalidCredentials)
 		}
 	}
 
@@ -94,6 +94,11 @@ func (a *AuthService) RegisterNewUser(ctx context.Context, email string, passwor
 
 	id, err := a.usrSaver.SaveUser(ctx, email, passHash)
 	if err != nil {
+		if errors.Is(err, err_internal.ErrUserExists) {
+			log.Error("user already exists", zap.Error(err))
+			return 0, fmt.Errorf("user already exists: %w", err_internal.ErrUserExists)
+		}
+
 		log.Error("failed to save user", zap.Error(err))
 		return 0, err
 	}
@@ -110,6 +115,10 @@ func (a *AuthService) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 
 	isAdmin, err := a.usrProvider.IsAdmin(ctx, userID)
 	if err != nil {
+		if errors.Is(err, err_internal.ErrAppNotFound) {
+			a.log.Error("user not found", zap.Error(err))
+			return false, fmt.Errorf("user not found: %w", err_internal.ErrInvalidAppID)
+		}
 		return false, fmt.Errorf("failed to check admin status: %s %w", op, err)
 	}
 
