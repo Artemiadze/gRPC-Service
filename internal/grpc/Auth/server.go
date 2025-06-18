@@ -2,8 +2,10 @@ package auth
 
 import (
 	"context"
+	"errors"
 
 	ssov1 "github.com/Artemiadze/gRPC-Service/gen/go/sso"
+	_error "github.com/Artemiadze/gRPC-Service/internal/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,7 +27,6 @@ type Auth interface {
 	IsAdmin(
 		ctx context.Context,
 		userID int64,
-		appID int,
 	) (isAdmin bool, err error)
 }
 
@@ -60,7 +61,9 @@ func (s *serverAPI) Login(
 
 	token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()))
 	if err != nil {
-		//TODO
+		if errors.Is(err, _error.ErrInvalidCredentials) {
+			return nil, status.Error(codes.InvalidArgument, "Invalid email or password")
+		}
 		return nil, status.Error(codes.Internal, "Failed to login: "+err.Error())
 	}
 
@@ -80,7 +83,9 @@ func (s *serverAPI) Register(
 
 	uid, err := s.auth.RegisterNewUser(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
-		// TODO
+		if errors.Is(err, _error.ErrUserExists) {
+			return nil, status.Error(codes.AlreadyExists, "User already exists")
+		}
 		return nil, status.Error(codes.Internal, "failed to register user")
 	}
 
@@ -92,5 +97,18 @@ func (s *serverAPI) IsAdmin(
 	ctx context.Context,
 	req *ssov1.IsAdminRequest,
 ) (*ssov1.IsAdminResponse, error) {
-	panic("implemented me")
+	if req.UserId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	isAdmin, err := s.auth.IsAdmin(ctx, req.GetUserId())
+	if err != nil {
+		if errors.Is(err, _error.ErrUserNotFound) {
+			return nil, status.Error(codes.NotFound, "user not found")
+		}
+
+		return nil, status.Error(codes.Internal, "failed to check admin status")
+	}
+
+	return &ssov1.IsAdminResponse{IsAdmin: isAdmin}, nil
 }

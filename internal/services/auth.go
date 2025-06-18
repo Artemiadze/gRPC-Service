@@ -27,7 +27,7 @@ type Storage interface {
 	User(ctx context.Context, email string) (user models.User, err error)
 	IsAdmin(ctx context.Context, uid int64) (isAdmin bool, err error)
 	SaveUser(ctx context.Context, email string, passHash []byte) (uid int64, err error)
-	App(ctx context.Context, uid int64) (app models.App, err error)
+	App(ctx context.Context, appID int) (models.App, error)
 }
 
 // New creates a new instance of AuthService with the provided dependencies.
@@ -47,7 +47,7 @@ func New(
 	}
 }
 
-func (a *AuthService) Login(ctx context.Context, email string, password string, appID int64) (string, error) {
+func (a *AuthService) Login(ctx context.Context, email string, password string, appID int) (string, error) {
 	const op = "AuthService.Login"
 	log := a.log.With(zap.String("method", op), zap.String("email", email))
 
@@ -80,7 +80,7 @@ func (a *AuthService) Login(ctx context.Context, email string, password string, 
 	return token, nil
 }
 
-func (a *AuthService) RegisterNewUser(ctx context.Context, email string, password string, appID int) (int64, error) {
+func (a *AuthService) RegisterNewUser(ctx context.Context, email string, password string) (int64, error) {
 	const op = "AuthService.RegisterNewUser"
 	log := a.log.With(zap.String("method", op), zap.String("email", email))
 

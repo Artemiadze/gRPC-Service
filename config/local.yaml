@@ -1,5 +1,6 @@
 env: "local" # dev, prod
-storage_path: "./storage/sso.db"   # место хранения базы данных
+dsn: host=localhost port=5432 user=postgres password=postgre dbname=mydb sslmode=disable
+   # место хранения базы данных
 token_ttl: 1h # время жизни токена в секунда
 grpc:
   port: 50051 # порт gRPC сервера

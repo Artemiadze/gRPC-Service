@@ -28,12 +28,12 @@ func main() {
 
 	logger.Info("starting service",
 		zap.String("env", cfg.Env),
-		zap.String("storage_path", cfg.StoragePath),
+		zap.String("storage_path", cfg.DSN),
 	)
 	//logger.Debug("Debug message")
 
 	// инициализация приложения (app)
-	application := app.New(logger, cfg.GRPC.Port, cfg.StoragePath, cfg.TokenTTL)
+	application := app.New(logger, cfg.GRPC.Port, cfg.DSN, cfg.TokenTTL)
 
 	// Go-routine для запуска gRPC сервера
 	go application.GRPCServer.MustRun()
