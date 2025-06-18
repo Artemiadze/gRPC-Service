@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/golang-migrate/migrate/v4"
+	//"github.com/golang-migrate/migrate/v4/source/file"
+	//"github.com/golang-migrate/migrate/v4/database/postgres"
 )
 
 func main() {
