@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine
+FROM golang:1.23-alpine
 
 WORKDIR /app
 
@@ -6,4 +6,4 @@ COPY . .
 
 RUN go mod download
 
-CMD ["go", "run", "main.go"]
+CMD ["go", "run", "cmd/sso/main.go"]

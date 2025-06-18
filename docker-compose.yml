@@ -24,7 +24,7 @@ services:
         condition: service_healthy
     environment:
       DB_URL: postgres://postgres:secret@db:5432/mydb?sslmode=disable
-    command: go run main.go -storage "$DB_URL" -migration "migrations"
+    command: go run cmd/sso/main.go -storage "$DB_URL" -migration "migrations"
 
 volumes:
   db_data:
