@@ -17,6 +17,19 @@ services:
       interval: 5s
       retries: 5
 
+  migrate:
+    build:
+      context: .
+    depends_on:
+      db:
+        condition: service_healthy
+    working_dir: /app
+    command: >
+      go run ./cmd/migrator
+      -storage="postgres://postgres:postgre@db:5432/mydb?sslmode=disable"
+      -migration="./internal/migrations"
+      -table="migrations"
+
   sso:
     build:
       context: .
