@@ -23,7 +23,7 @@ The URL Shortener receives a request from the client, extracts a token from it, 
 ### Steps to Install
 1. Clone the repository:
    ```bash
-   git clone 
+   git clone https://github.com/Artemiadze/gRPC-Service.git
    ```
 2. Navigate to the project directory:
    ```
